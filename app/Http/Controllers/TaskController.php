@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+
     public function index(int $id)
     {
         // すべてのフォルダを取得する
@@ -35,4 +36,30 @@ class TaskController extends Controller
             'folder_id' => $id,
         ]);
     }
+
+    /**
+     * GET /folders/{id}/tasks/{task_id}/edit
+     */
+    public function showEditForm(int $id, int $task_id)
+    {
+        $task = Task::find($task_id);
+        return view('tasks/edit', [
+          'task'  =>  $task,
+        ]);
+    }
+
+    public function edit(int $id, int $task_id, EditTask $request)
+    {
+        $task = Task::find($task_id);
+
+        $task->title = $request->title;
+        $task->status = $request->status;
+        $task->due_date = $request->due_date;
+        $task->save();
+
+        return redirect()->route('tasks.index', [
+            'id'  =>  $task->folder_id,
+        ]);
+    }
+
 }
